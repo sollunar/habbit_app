@@ -24,8 +24,19 @@ const page = {
 
 /* utils */
 
-function loadData() {
+async function fetchData() {
+    const dataLoaded = localStorage.getItem(HABBIT_KEY);
+    if (!dataLoaded) {
+        const response = await fetch("../data/demo.json");
+        const jsonData = await response.json();
+
+        localStorage.setItem(HABBIT_KEY, JSON.stringify(jsonData));
+    }
+}
+
+async function loadData() {
     const habbitsString = localStorage.getItem(HABBIT_KEY);
+
     const habbitsArray = JSON.parse(habbitsString);
     if (Array.isArray(habbitsArray)) {
         habbits = habbitsArray;
@@ -211,7 +222,8 @@ function addHabbit(event) {
 
 /* init */
 
-(() => {
+(async () => {
+    await fetchData();
     loadData();
     const hashId = Number(document.location.hash.replace("#", ""));
     const urlHabbit = habbits.find((habbit) => habbit.id === hashId);
